@@ -211,7 +211,7 @@ sub post_note {
     my $md5_url = md5_hex($note->{'url'});
 
     my $url = $note->{'url'} . "#" . $md5_body;
-    my $title = $note->{'title'} . "(" . $md5_body . ")";
+    my $title = $note->{'title'} . " #" . $md5_body;
 
     my $tags = join(",", ("highlights", $note->{'tags'}, "url:" . $md5_url));
 
