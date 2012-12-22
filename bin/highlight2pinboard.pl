@@ -30,13 +30,13 @@ handler or callback that you'll need to configure yourself.
 
 =item *
 
-B<--config> --c
+B<--config> -c
 
 The path to a config file containing your pinboard.in credentials.
 
 =item *
 
-B<--public> --p
+B<--public> -p
 
 Make the highlight public on pinboard.in. Default is false.
 
