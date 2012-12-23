@@ -30,15 +30,21 @@ handler or callback that you'll need to configure yourself.
 
 =item *
 
-B<--config> -c
+B<-c> is for "config"
 
 The path to a config file containing your pinboard.in credentials.
 
 =item *
 
-B<--public> -p
+B<-p> is for "public"
 
 Make the highlight public on pinboard.in. Default is false.
+
+=item *
+
+B<-n> is for "note"
+
+Post the highlight to pinboard.in as a "note" (rather than a bookmark). Default is false.
 
 =back
 
@@ -71,6 +77,11 @@ L<Email::MIME>
 =item
 
 L<Config::Simple>
+
+=item
+
+L<WWW::Mechanize> - this is only required if you need to post highlights as
+a "note"
 
 =back
 
@@ -106,13 +117,20 @@ sub main {
     my $txt = '';
     my %opts = ();
 
-    getopts('c:p', \%opts);
+    getopts('c:pn', \%opts);
 
     if (! -f $opts{'c'}){
 	warn "Not a valid config file";
 	return 0;
     }
 
+    my $public = ($opts{'p'}) ? 1 : 0;
+    my $as_note = ($opts{'n'}) ? 1 : 0;
+
+    if ($as_note){
+	    use WWW::Mechanize
+    }
+	
     my $cfg = Config::Simple->new($opts{'c'});
     my $del = Net::Delicious->new($cfg);
 
@@ -122,8 +140,13 @@ sub main {
 
     if (my $note = parse_email($txt)){
 
-	my $public = ($opts{'p'}) ? 1 : 0;
-	post_note($del, $note, $public);
+	if ($as_note){
+	    post_as_note($cfg, $note, $public);
+	}
+
+	else {
+	    post_as_link($del, $note, $public);
+	}
     }
     
     return 1;
@@ -201,7 +224,7 @@ sub parse_instapaper {
     return \%note;
 }
 
-sub post_note {
+sub post_as_link {
     my $del = shift;
     my $note = shift;
     my $public = shift;
@@ -225,4 +248,60 @@ sub post_note {
 
     my $rsp = $del->add_post(\%post);
     return $rsp;
+}
+
+# See also: https://gist.github.com/3968495
+
+sub post_as_note {
+    my $cfg = shift;
+    my $note = shift;
+    my $public = shift;
+
+    my $username = $cfg->param('delicious.user');
+    my $password = $cfg->param('delicious.pswd');
+
+    my $md5_url = md5_hex($note->{'url'});
+
+    my $title = $note->{'title'};
+    my $tags = join(",", ("highlights", $note->{'tags'}, "url:" . $md5_url));
+    my $body = join("\n\n", ($note->{'body'}, $note->{'url'}));
+
+    # Go!
+
+    my $action = ($public) ? 'save_public' : 'save_private';
+    my $button = ($public) ? 'save public' : 'save private';
+
+    my $m = WWW::Mechanize->new();
+    $m->get("https://pinboard.in/");
+
+    $m->field('username', $username);
+    $m->field('password', $password);
+    $m->submit();
+
+    # There's actually not much in the way of error checking
+    # the login but at least we can see if the server freaks
+    # out
+
+    if ($m->status != 200){
+	warn "failed to log in: " . $m->message;
+	return 0;
+    }
+
+    # Now add the note - see also:
+    # http://search.cpan.org/~jesse/WWW-Mechanize/lib/WWW/Mechanize/FAQ.pod#I_submitted_a_form,_but_the_server_ignored_everything!_I_got_an_empty_form_back!
+
+    $m->get("https://pinboard.in/note/add/");
+
+    $m->field('title', $title);
+    $m->field('tags', $tags);
+    $m->field('note', $body);
+    $m->field('action', $action);
+    $m->click_button('value', $button);
+
+    if ($m->status != 200){
+	warn "failed to post note: " . $m->message;
+	return 0;
+    }
+
+    return 1;
 }
