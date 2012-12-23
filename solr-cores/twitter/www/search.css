@@ -1,0 +1,19 @@
+body {
+    font-family: sans-serif;
+}
+
+#search_results {
+
+}
+
+#search_results li {
+    line-height: 1.5em;
+    list-style-type: none;
+    margin-bottom: 1.1em;
+    border-bottom: 1px solid #ccc;
+}
+
+.fave {
+    font-style: italic;
+    font-weight: 100;
+}

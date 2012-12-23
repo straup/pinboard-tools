@@ -52,15 +52,31 @@ function search_draw_results(response){
 	var count = docs.length;
 
 	var html = total + ' results';
-	html += '<ul>';
+	html += '<ul id="search_results">';
 
 	for (var i=0; i < count; i++){
 		var tweet = docs[i];
+	    console.log(tweet);
 
-		html += '<li>';
-		html += tweet['text'];
-		html += ' – @' + tweet['username'];
-		html += ', ' + tweet['created_at'];
+		var classes = [];
+
+		if (tweet['favorited']){
+			classes.push('fave');
+		}
+
+		classes = classes.join(' ');
+
+		var link = 'https://www.twitter.com/' + tweet['username'] + '/status/' + tweet['id'];
+
+		html += '<li class="' + classes + '">';
+		html += '<q>' + tweet['text'] + '</q>';
+	    	html += '<br />';
+		html += tweet['created_at'];
+
+		if (! tweet['favorited']){	    
+			html += ' / <a href="' + link + '" target="_twitter">@' + tweet['username'] + '</a>';
+		}
+
 		html += '</li>';
 	}
 
