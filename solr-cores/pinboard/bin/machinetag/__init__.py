@@ -83,11 +83,12 @@ class machinetag :
                 if m :
 
                     self.__isnumeric__ = True
+                    self.__value__ = unicode(self.__value__)
 
                     if m[0] :
-                        self.__value__ = float(self.__value__)
+                        self.__value_numeric__ = float(self.__value__)
                     else :
-                        self.__value__ = int(self.__value__)
+                        self.__value_numeric__ = int(self.__value__)
 
     #
 

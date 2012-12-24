@@ -19,6 +19,7 @@ def import_links(solr_endpoint, pinboard_links):
 
         tags = []
         machinetags = []
+        machinetags_hierarchy = []
 
         for t in doc['tags'].split(' '):
 
@@ -29,21 +30,26 @@ def import_links(solr_endpoint, pinboard_links):
             if not mt.is_machinetag():
                 continue
 
-            parts = [
+            for chunk in mt.magic_8s():
+                if not chunk in machinetags:
+                    machinetags.append(chunk)
+
+            hier = [
                 mt.namespace(),
                 mt.predicate(),
                 mt.value()
                 ]
 
-            parts = map(unicode, parts)
+            hier = map(unicode, hier)
 
-            machinetags.append("/".join(parts))
+            machinetags_hierarchy.append("/".join(hier))
 
         if len(tags):
             doc['tags'] = tags
 
         if len(machinetags):
             doc['machinetags'] = machinetags
+            doc['machinetags_hierarchy'] = machinetags_hierarchy
 
         for key in ('shared', 'toread'):
             if doc[ key ] == 'yes':
