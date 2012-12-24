@@ -4,6 +4,7 @@ import sys
 import logging
 import pysolr
 import json
+import machinetag
 
 def import_links(solr_endpoint, pinboard_links):
 
@@ -16,29 +17,33 @@ def import_links(solr_endpoint, pinboard_links):
 
     for doc in data:
 
-        doc['tags'] = doc['tags'].split(' ')
-
-        """
         tags = []
+        machinetags = []
 
         for t in doc['tags'].split(' '):
 
-            parts = []
+            tags.append(t)
 
-            head = t.split(":")
-            parts.append(head[0])
+            mt = machinetag.machinetag(t)
 
-            if len(head) == 2:
-                tail = head[1].split("=")
-                parts.extend(tail)
+            if not mt.is_machinetag():
+                continue
 
-            if len(parts):
-                parts = "/".join(parts)
-                tags.append(parts)
+            parts = [
+                mt.namespace(),
+                mt.predicate(),
+                mt.value()
+                ]
+
+            parts = map(unicode, parts)
+
+            machinetags.append("/".join(parts))
 
         if len(tags):
             doc['tags'] = tags
-        """
+
+        if len(machinetags):
+            doc['machinetags'] = machinetags
 
         for key in ('shared', 'toread'):
             if doc[ key ] == 'yes':
