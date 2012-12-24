@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 
 import sys
+import logging
 import pysolr
 import json
 
-if __name__ == '__main__':
+def import_links(solr_endpoint, pinboard_links):
 
-    solr = pysolr.Solr('http://localhost:8983/solr/pinboard')
+    solr = pysolr.Solr(solr_endpoint)
 
-    path = sys.argv[1]
-    fh = open(path, 'r')
+    fh = open(pinboard_links, 'r')
 
     data = json.load(fh)
     docs = []
@@ -58,5 +58,27 @@ if __name__ == '__main__':
     if len(docs):
         solr.add(docs)
     
+    logging.debug("import complete, optimizing...")
     solr.optimize()
 
+
+if __name__ == '__main__':
+
+    import optparse
+
+    parser = optparse.OptionParser()
+    parser.add_option("-p", "--pinboard", dest="pinboard", action="store", help="your pinboard.in links (as a JSON export)")
+    parser.add_option("-s", "--solr", dest="solr", action="store", help="your solr endpoint; default is http://localhost:8983/solr/pinboard", default="http://localhost:8983/solr/pinboard")
+    parser.add_option("-v", "--verbose", dest="verbose", action="store_true", help="enable chatty logging", default=False)
+
+    (opts, args) = parser.parse_args()
+
+    if opts.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
+
+    import_links(opts.solr, opts.pinboard)
+
+    logging.info("all done!")
+    sys.exit()
