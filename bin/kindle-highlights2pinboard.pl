@@ -6,7 +6,7 @@ kindle-highlights2pinboard.pl
 
 =head1 SYNOPSIS
 
- $> ./kindle-highlights2pinboard.pl -c pinboard.cfg -h /path/to/your-kindle/My\ Clippings.txt
+ $> ./kindle-highlights2pinboard.pl -c pinboard.cfg -h /path/to/your/kindle/My\ Clippings.txt
 
 =head1 DESCRIPTION
 
@@ -50,7 +50,8 @@ The text of the highlight itself.
 
 A number of tags: 'highlights'; 'kindle'; machine tags for the year, month and
 day the highlight was recorded; machine tags for both the MD5 hash of the book's
-title and author(s)
+title and author. (Wouldn't it be awesome if Amazon included ISBN/ASIN/people
+pointers in their highlight dumps? I know, right...)
 
 =back
 
@@ -91,6 +92,11 @@ things inside a 'delicious' block. For example:
  debug=0
 
 Note how we're over-riding the default (delicious) endpoint.
+
+=head1 My Clippings.txt
+
+The 'My Clippings.txt' file is located inside the 'documents' folder of your
+Kindle when plugged in to your computer in USB mode.
 
 =head1 DEPENDENCIES
 
