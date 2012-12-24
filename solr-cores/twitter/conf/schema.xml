@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<schema name="example" version="1.5">
+
+ <fields>
+        
+   <field name="_version_" type="tlong" indexed="true" stored="true"/>
+
+   <field name="username" type="string" indexed="true" stored="true" required="true" multiValued="false" /> 
+   <field name="id" type="tlong" indexed="true" stored="true" required="true" />
+
+   <field name="reply_to_tweet_id" type="tlong" indexed="true" stored="true" required="false" />
+   <field name="reply_to_user_id" type="tlong" indexed="true" stored="true" required="false" />
+   <field name="reply_to_username" type="string" indexed="true" stored="true" required="false" multiValued="false" /> 
+
+   <field name="text" type="text_general" indexed="true" stored="true" required="true" multiValued="false" /> 
+
+   <field name="created_at" type="tdate" indexed="true" stored="true" multiValued="false"/>
+   <field name="added_at" type="tdate" indexed="true" stored="true" multiValued="false"/>
+
+   <field name="retweeted" type="boolean" indexed="true" stored="true" multiValued="false"/>
+   <field name="favorited" type="boolean" indexed="true" stored="true" multiValued="false"/>
+
+   <field name="link_count" type="tint" indexed="true" stored="true" required="false" multiValued="false" /> 
+   <field name="retweet_count" type="tint" indexed="true" stored="true" required="false" multiValued="false" /> 
+
+ </fields>
+
+   <uniqueKey>id</uniqueKey>
+
+  <types>
+
+    <!-- The StrField type is not analyzed, but indexed/stored verbatim. -->
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
+
+    <!-- boolean type: "true" or "false" -->
+    <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+
+    <fieldType name="tint" class="solr.TrieIntField" precisionStep="8" positionIncrementGap="0"/>
+    <fieldType name="tfloat" class="solr.TrieFloatField" precisionStep="8" positionIncrementGap="0"/>
+    <fieldType name="tlong" class="solr.TrieLongField" precisionStep="8" positionIncrementGap="0"/>
+    <fieldType name="tdouble" class="solr.TrieDoubleField" precisionStep="8" positionIncrementGap="0"/>
+
+    <fieldType name="date" class="solr.TrieDateField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="tdate" class="solr.TrieDateField" precisionStep="6" positionIncrementGap="0"/>
+
+    <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
+      <analyzer type="index">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+    </fieldType>
+
+    <fieldtype name="phonetic" stored="false" indexed="true" class="solr.TextField" >
+      <analyzer>
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.DoubleMetaphoneFilterFactory" inject="false"/>
+      </analyzer>
+    </fieldtype>
+
+    <fieldType name="machinetag_hierarchy" class="solr.TextField" positionIncrementGap="100">
+
+      <analyzer type="index">
+        <tokenizer class="solr.PathHierarchyTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+
+      <analyzer type="query">
+        <tokenizer class="solr.PathHierarchyTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+
+    </fieldType>
+
+ </types>
+
+</schema>

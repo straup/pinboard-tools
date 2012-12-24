@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<schema name="example" version="1.5">
+
+ <fields>
+        
+   <field name="_version_" type="tlong" indexed="true" stored="true"/>
+
+   <field name="href" type="string" indexed="true" stored="true" required="true" />
+   <field name="hostname" type="string" indexed="true" stored="true" required="false" />
+
+   <field name="description" type="text_general" indexed="true" stored="true" required="true" multiValued="false" /> 
+   <field name="extended" type="text_general" indexed="true" stored="true" required="false" multiValued="false" /> 
+
+   <field name="meta" type="string" indexed="true" stored="true" multiValued="false" required="true" />
+   <field name="hash" type="string" indexed="true" stored="true" multiValued="false" required="true" />
+
+   <field name="time" type="tdate" indexed="true" stored="true" multiValued="false"/>
+
+   <field name="shared" type="boolean" indexed="true" stored="true" multiValued="false"/>
+   <field name="toread" type="boolean" indexed="true" stored="true" multiValued="false"/>
+
+   <field name="tags" type="tags" indexed="true" stored="true" required="false" multiValued="true" /> 
+
+   <field name="machinetags" type="machinetags" indexed="true" stored="false" required="false" multiValued="true" /> 
+   <field name="machinetags_hierarchy" type="machinetags_hierarchy" indexed="true" stored="false" required="false" multiValued="true" /> 
+
+ </fields>
+
+   <uniqueKey>href</uniqueKey>
+
+  <types>
+
+    <!-- The StrField type is not analyzed, but indexed/stored verbatim. -->
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
+
+    <!-- boolean type: "true" or "false" -->
+    <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+
+    <fieldType name="tint" class="solr.TrieIntField" precisionStep="8" positionIncrementGap="0"/>
+    <fieldType name="tfloat" class="solr.TrieFloatField" precisionStep="8" positionIncrementGap="0"/>
+    <fieldType name="tlong" class="solr.TrieLongField" precisionStep="8" positionIncrementGap="0"/>
+    <fieldType name="tdouble" class="solr.TrieDoubleField" precisionStep="8" positionIncrementGap="0"/>
+
+    <fieldType name="date" class="solr.TrieDateField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="tdate" class="solr.TrieDateField" precisionStep="6" positionIncrementGap="0"/>
+
+    <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
+      <analyzer type="index">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+    </fieldType>
+
+    <fieldType name="tags" class="solr.TextField" positionIncrementGap="100">
+
+      <analyzer>
+        <tokenizer class="solr.LetterTokenizerFactory"/>
+        <filter class="solr.TrimFilterFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+
+    </fieldType>
+
+    <fieldType name="machinetags" class="solr.TextField" positionIncrementGap="100">
+
+      <analyzer>
+        <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+        <filter class="solr.TrimFilterFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+
+    </fieldType>
+
+    <!-- http://localhost:8983/solr/pinboard/select?q=*:*&rows=0&wt=xml&facet=true&facet.field=machinetags&facet.mincount=1 -->
+    <!-- http://localhost:8983/solr/pinboard/select?q=*:*&rows=0&wt=xml&facet=true&facet.field=machinetags&facet.mincount=1&facet.prefix=md5 -->
+
+    <fieldType name="machinetags_hierarchy" class="solr.TextField" positionIncrementGap="100">
+
+      <analyzer>
+        <tokenizer class="solr.PathHierarchyTokenizerFactory"/>
+        <filter class="solr.TrimFilterFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+
+    </fieldType>
+
+    <!-- see also: https://issues.apache.org/jira/browse/SOLR-64 -->
+
+ </types>
+
+</schema>

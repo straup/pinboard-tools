@@ -5,6 +5,7 @@ import logging
 import pysolr
 import json
 import machinetag
+import urlparse
 
 def import_links(solr_endpoint, pinboard_links):
 
@@ -41,8 +42,9 @@ def import_links(solr_endpoint, pinboard_links):
                 ]
 
             hier = map(unicode, hier)
+            hier = "/".join(hier)
 
-            machinetags_hierarchy.append("/".join(hier))
+            machinetags_hierarchy.append(hier)
 
         if len(tags):
             doc['tags'] = tags
@@ -59,6 +61,15 @@ def import_links(solr_endpoint, pinboard_links):
 
         if doc['description'] == '':
             doc['description'] = doc['href']
+
+        parsed = urlparse.urlparse(doc['href'])
+        hostname = parsed.hostname
+
+        if hostname:
+            if hostname.startswith("www."):
+                hostname = hostname.replace("www.", "")
+        
+        doc['hostname'] = hostname
 
         docs.append(doc)
         
