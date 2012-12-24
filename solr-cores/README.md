@@ -15,3 +15,8 @@ Known-knowns
 It's currently not possible to search for links in the `pinboard` core using
 machine tags because some of the characters used to encode machine tags are
 reserved in Solr/Lucene land. This will worked out eventually.
+
+See also
+--
+
+* [the pinboard.in export bookmarks/tweets page](https://pinboard.in/export/)
