@@ -24,6 +24,8 @@
    <field name="link_count" type="tint" indexed="true" stored="true" required="false" multiValued="false" /> 
    <field name="retweet_count" type="tint" indexed="true" stored="true" required="false" multiValued="false" /> 
 
+   <field name="links" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+
  </fields>
 
    <uniqueKey>id</uniqueKey>
