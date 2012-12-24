@@ -59,6 +59,10 @@
 
     <fieldType name="tags" class="solr.TextField" positionIncrementGap="100">
 
+      <!-- the letter tokenizer is clearly *not* what we want but we do
+           want something to make it possible to search for fully qualified
+	   machinetags... (20121224/straup) -->
+
       <analyzer>
         <tokenizer class="solr.LetterTokenizerFactory"/>
         <filter class="solr.TrimFilterFactory"/>
