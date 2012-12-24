@@ -51,13 +51,13 @@ function search_draw_results(response){
 	var docs = response['docs'];
 	var count = docs.length;
 
-	var html = total + ' results';
+	// fix me: query term and htmlspecialchars.js
+
+	var html = total + ' results for <q>' + '</q>';
 	html += '<ul id="search_results">';
 
 	for (var i=0; i < count; i++){
 		var tweet = docs[i];
-	    console.log(tweet);
-
 		var classes = [];
 
 		if (tweet['favorited']){
@@ -68,15 +68,22 @@ function search_draw_results(response){
 
 		var link = 'https://www.twitter.com/' + tweet['username'] + '/status/' + tweet['id'];
 
+		var ymd = tweet['created_at'].split('T')[0];
+
 		html += '<li class="' + classes + '">';
 		html += '<q>' + tweet['text'] + '</q>';
-	    	html += '<br />';
-		html += tweet['created_at'];
+	    	html += '<div class="meta">';
 
 		if (! tweet['favorited']){	    
-			html += ' / <a href="' + link + '" target="_twitter">@' + tweet['username'] + '</a>';
+			html += '@' + tweet['username'] + ' <a href="' + link + '" target="_twitter">said this</a>';
 		}
 
+		else {
+			html += ' @' + tweet['username'] + ' faved this';
+		}
+
+		html += ' / ' + ymd;
+		html += '</div>';
 		html += '</li>';
 	}
 
