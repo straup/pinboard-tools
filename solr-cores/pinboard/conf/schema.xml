@@ -64,7 +64,7 @@
 	   machinetags... (20121224/straup) -->
 
       <analyzer>
-        <tokenizer class="solr.LetterTokenizerFactory"/>
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
         <filter class="solr.TrimFilterFactory"/>
         <filter class="solr.LowerCaseFilterFactory"/>
       </analyzer>

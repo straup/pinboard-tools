@@ -7,11 +7,15 @@ import json
 import machinetag
 import urlparse
 
-def import_links(solr_endpoint, pinboard_links):
+def import_links(options):
 
-    solr = pysolr.Solr(solr_endpoint)
+    solr = pysolr.Solr(options.solr)
 
-    fh = open(pinboard_links, 'r')
+    if options.purge:
+        logging.info("purging all existing bookmarks...")
+        solr.delete(q='*:*')
+
+    fh = open(options.pinboard, 'r')
 
     data = json.load(fh)
     docs = []
@@ -92,6 +96,7 @@ if __name__ == '__main__':
     parser.add_option("-p", "--pinboard", dest="pinboard", action="store", help="your pinboard.in links (as a JSON export)")
     parser.add_option("-s", "--solr", dest="solr", action="store", help="your solr endpoint; default is http://localhost:8983/solr/pinboard", default="http://localhost:8983/solr/pinboard")
     parser.add_option("-v", "--verbose", dest="verbose", action="store_true", help="enable chatty logging", default=False)
+    parser.add_option("--purge", dest="purge", action="store_true", help="purge all your existing bookmarks before starting the import; default is false", default=False)
 
     (opts, args) = parser.parse_args()
 
@@ -100,7 +105,7 @@ if __name__ == '__main__':
     else:
         logging.basicConfig(level=logging.INFO)
 
-    import_links(opts.solr, opts.pinboard)
+    import_links(opts)
 
     logging.info("all done!")
     sys.exit()
