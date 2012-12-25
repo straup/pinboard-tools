@@ -178,6 +178,7 @@
 
 			$text = html_entity_decode($data['text']);
 			$text = iconv("UTF-8", "ISO-8859-1//TRANSLIT", $text);
+			$text = trim($text);
 
 			$id = $data['id'];
 
