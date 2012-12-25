@@ -31,8 +31,7 @@
 			$this->AddPage();
 			$this->AddPage();
 
-			$year = basename($src);
-			$title = "#{$this->year}";
+			$title = "#{$this->opts['year']}";
 
 			$this->AddPage();
 			$this->SetRightMargin(1.25);
@@ -42,7 +41,7 @@
 			$this->MultiCell(0, 1, $title, 0, 'R');
 
 			$this->SetFont('Helvetica','B', 18);
-			$this->MultiCell(0, 0, $this->username, 0, 'R');
+			$this->MultiCell(0, 0, $this->opts['username'], 0, 'R');
 
 			$this->AddPage();
 
@@ -113,7 +112,7 @@
 				}
 			}
 
-			$this->draw_colophon($this->username);
+			$this->draw_colophon($this->opts['username']);
 
 			$this->Output($this->opts['output']);
 		}
@@ -146,7 +145,7 @@
 
 		function draw_colophon($name=''){
 
-			if ($full_name == ''){
+			if ($name == ''){
 				return;
 			}
 
@@ -173,11 +172,9 @@
 			$year = date("Y", $date);
 			$ymd = date("F d, Y", $date);
 
-			/*
-			if ($year < $this->year){
+			if ($year < $this->opts['year']){
 				return null;
 			}
-			*/
 
 			$text = html_entity_decode($data['text']);
 			$text = iconv("UTF-8", "ISO-8859-1//TRANSLIT", $text);
@@ -191,11 +188,9 @@
 				'text' => $text,
 			);
 
-			/*
-			if ($year > $this->year){
+			if ($year > $this->opts['year']){
 				$rsp['epilogue'] = 1;
 			}
-			*/
 
 			return $rsp;
 		}
