@@ -48,7 +48,7 @@ The text of the highlight itself.
 
 =item *
 
-A number of tags: 'highlights'; 'kindle'; machine tags for the year, month and
+A number of tags: 'highlights'; 'from:kindle'; machine tags for the year, month and
 day the highlight was recorded; machine tags for both the MD5 hash of the book's
 title and author. (Wouldn't it be awesome if Amazon included ISBN/ASIN/people
 pointers in their highlight dumps? I know, right...)
@@ -275,7 +275,7 @@ sub post_as_link {
 
     my @tags = (
 	"highlights",
-	"kindle",
+	"from:kindle",
 	"dt:year=" . time2str("%Y", $highlight->{'timestamp'}),
 	"dt:month=" . time2str("%m", $highlight->{'timestamp'}),
 	"dt:day=" . time2str("%d", $highlight->{'timestamp'}),
