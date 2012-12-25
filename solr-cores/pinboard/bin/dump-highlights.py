@@ -1,13 +1,66 @@
 #!/usr/bin/env python
-
-# THIS IS SO NOT FINISHED YET (20121225/straup)
-
-# wkpdf -o highlights.pdf -s highlights.html -p custom:432x648 -m 54 36 72 36
  
 import sys
 import json
 import pysolr
-import pprint
+import logging
+
+def dump_highlights(opts):
+
+    if opts.output:
+        fh = open(opts.output, 'w')
+    else:
+        fh = sys.stdout
+
+    solr = pysolr.Solr(opts.solr)
+    year = opts.year
+
+    write_header(fh)
+
+    total = None
+    rows = 1000
+    start = 0
+
+    query = [
+        "tags:highlights",
+        "extended:*"
+        ]
+
+    if opts.year:
+        query.append("time:[ %s-01-01T00:00:00Z TO %s-12-31T23:59:59Z ]" % (opts.year, opts.year))
+
+    query = " AND ".join(query)
+
+    args = {
+        'q' : query,
+        'sort' : '_version_ desc',
+        'fl': 'description,extended,tags',
+        'rows': rows,
+        }
+
+    if opts.filter:
+        args['fq'] = opts.filter
+
+    data = []
+
+    while not total or start < total:
+
+        args['start'] = start
+        
+        rsp = solr.search(**args)
+
+        if not total:
+            total = rsp.hits
+
+        if total == 0:
+            break
+
+        for doc in rsp.docs:
+            write_highlight(fh, doc)
+
+        start += rows
+
+    write_footer(fh)
 
 def write_header(fh, title=''):
 
@@ -39,8 +92,8 @@ def write_highlight(fh, doc):
 
         parts = parts[1].split(" | ")
 
-        fh.write('<br />')
-        fh.write(parts[-1].replace("Added on ", ""))
+        # fh.write('<br />')
+        fh.write(parts[-1].replace("Added on ", " - "))
 
     else:
         # FIX ME: format doc['time'] ...
@@ -53,54 +106,26 @@ def write_highlight(fh, doc):
 
 if __name__ == '__main__':
 
-    fh = sys.stdout
+    # ./dump-highlights.py -y 2012 -f '-machinetags:dt8cyear8e2011' | wkpdf -o foop.pdf -p custom:432x648 -m 54 36 72 36
+    # ./dump-highlights.py -f 'machinetags:dt8cyear8e2011' | wkpdf -o foop.pdf -p custom:432x648 -m 54 36 72 36
 
-    write_header(fh)
+    import optparse
 
-    solr = pysolr.Solr('http://localhost:8983/solr/pinboard/')
+    parser = optparse.OptionParser()
+    parser.add_option("-y", "--year", dest="year", action="store", help="", default=None)
+    parser.add_option("-f", "--filter", dest="filter", action="store", help="", default=None)
+    parser.add_option("-o", "--output", dest="output", action="store", help="", default=None)
+    parser.add_option("-s", "--solr", dest="solr", action="store", help="your solr endpoint; default is http://localhost:8983/solr/pinboard", default="http://localhost:8983/solr/pinboard")
+    parser.add_option("-v", "--verbose", dest="verbose", action="store_true", help="enable chatty logging", default=False)
 
-    year = 2012
+    (opts, args) = parser.parse_args()
 
-    total = None
-    rows = 1000
-    start = 0
+    if opts.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
 
-    query = [
-        "tags:highlights",
-        "extended:*",
-        "time:[ %s-01-01T00:00:00Z TO %s-12-31T23:59:59Z ]" % (year, year)
-        ]
+    dump_highlights(opts)
 
-    query = " AND ".join(query)
-
-    filter = '-machinetags:dt8cyear8e%s' % (year - 1)
-
-    args = {
-        'q' : query,
-        'sort' : '_version_ desc',
-        'fl': 'description,extended,tags,time',
-        'rows': rows,
-        }
-
-    if filter:
-        args['fq'] = filter
-
-    data = []
-
-    while not total or start < total:
-
-        args['start'] = start
-        
-        rsp = solr.search(**args)
-
-        if not total:
-            total = rsp.hits
-
-        for doc in rsp.docs:
-            write_highlight(fh, doc)
-
-        start += rows
-
-    write_footer(fh)
-
-sys.exit()
+    logging.info("done")
+    sys.exit()
