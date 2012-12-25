@@ -76,6 +76,10 @@ L<Email::MIME>
 
 =item
 
+L<Date::Format>
+
+=item
+
 L<Config::Simple>
 
 =item
@@ -101,6 +105,7 @@ use Config::Simple;
 use Email::MIME;
 use Net::Delicious;
 use Digest::MD5 qw (md5_hex);
+use Date::Format qw(time2str);
 
 {
     &main();
@@ -191,8 +196,13 @@ sub parse_instapaper {
 
     my @parts = split("\n", $txt);
 
+    my $now = time();
+    my $yyyy = time2str("%Y", $now);
+    my $mm = time2str("%m", $now);
+    my $dd = time2str("%d", $now);
+
     my %note = (
-	'tags' => 'from:instapaper',
+	'tags' => "from:instapaper dt:year=$yyyy dt:month=$mm dt:day=$dd",
 	);
 
     my @body = ();
