@@ -9,43 +9,6 @@ import re
 import httplib
 import urlparse
 
-def unshorten_url(url):
-
-    if not url:
-        return None
-
-    def _resolve(url):
-
-        parts = urlparse.urlparse(url)
-
-        conn = httplib.HTTPConnection(parts.hostname)
-        conn.request("HEAD", parts.path)
-        res = conn.getresponse()
-
-        for k,v in res.getheaders():
-            if k == 'location' or k == 'Location':
-                return v
-
-        return None
-
-    if url.startswith("http://t.co/"):
-        return unshorten_url(_resolve(url))
-
-    elif url.startswith("http://bit.ly/"):
-        return unshorten_url(_resolve(url))
-
-    elif url.startswith("http://flic.kr/"):
-        return unshorten_url(_resolve(url))
-
-    # elif url.startswith("http://sta.mn"):
-    #     return unshorten_url(_resolve(url))
-
-    elif url.startswith("http://ow.ly/"):
-        return unshorten_url(_resolve(url))
-
-    else:
-        return url
-
 def import_tweets(options):
 
     solr = pysolr.Solr(options.solr)
@@ -73,13 +36,12 @@ def import_tweets(options):
 
             if len(possible):
                 for p in possible:
-                    url = unshorten_url(p)
+                    url = unshorten_url(p, [])
       
                     if url:
                         links.append(url)
 
             if len(links):
-                print links
                 doc['links'] = links
 
         del(doc['source'])
@@ -93,6 +55,67 @@ def import_tweets(options):
         solr.add(docs)
     
     solr.optimize()
+
+def unshorten_url(url, seen=[]):
+
+    logging.debug("unshorten: %s (%s)" % (url, ";".join(seen)))
+
+    to_check = (
+        'bit.ly',
+        'flic.kr',
+        'ow.ly',
+        # 'sta.mn',
+        'shlong.us',
+        't.co',
+        )
+
+    def _resolve(url):
+
+        parts = urlparse.urlparse(url)
+
+        try:
+            conn = httplib.HTTPConnection(parts.hostname)
+            conn.request("HEAD", parts.path)
+            res = conn.getresponse()
+
+            for k,v in res.getheaders():
+                if k == 'location' or k == 'Location':
+                    return v
+
+        except Exception, e:
+            logging.warning("failed to resolve '%s' : %s" % (url, e))
+            return None
+
+        return None
+
+    parts = urlparse.urlparse(url)
+    unshorten_me = False
+
+    if parts.hostname in to_check:
+        unshorten_me = True
+    elif parts.hostname == 'www.flickr.com' and parts.path == '/short_urls.gne':
+        unshorten_me = True
+    elif parts.hostname == 'www.flickr.com' and parts.path == '/photo.gne':
+        unshorten_me = True
+    else:
+        pass
+
+    logging.debug("unshorten %s: %s" % (url, unshorten_me))
+
+    if not unshorten_me:
+        return url
+
+    unshortened = _resolve(url)
+
+    if not unshortened:
+        return url
+
+    if unshortened in seen:
+        return url
+
+    seen.append(url)
+
+    return unshorten_url(unshortened, seen)
 
 if __name__ == '__main__':
 
@@ -116,4 +139,3 @@ if __name__ == '__main__':
 
     logging.info("all done!")
     sys.exit()
-
