@@ -15,7 +15,7 @@ def dump_highlights(opts):
     solr = pysolr.Solr(opts.solr)
     year = opts.year
 
-    write_header(fh)
+    write_header(fh, opts.title)
 
     total = None
     rows = 1000
@@ -69,7 +69,9 @@ body { font-family:sans-serif; font-weight:100; font-size:12pt; margin: 0; }
 blockquote { margin-bottom: 3em;}
 blockquote p { line-height: 1.5em; }
 cite { font-size: 8pt; line-height: 1.4em; }
-		</style></head><body>""")
+#titlepage { font-size:36pt; text-align:right; font-weight:700; margin-top: 10em; color:#666; }
+.blank { page-break-after: always; }
+		</style></head><body><div class="blank" id="titlepage">%s</div><div class="blank">&#160;</div>""" % title)
 
 def write_footer(fh):
     fh.write("</body></html>")
@@ -114,6 +116,7 @@ if __name__ == '__main__':
     parser = optparse.OptionParser()
     parser.add_option("-y", "--year", dest="year", action="store", help="", default=None)
     parser.add_option("-f", "--filter", dest="filter", action="store", help="", default=None)
+    parser.add_option("-t", "--title", dest="title", action="store", help="", default='')
     parser.add_option("-o", "--output", dest="output", action="store", help="", default=None)
     parser.add_option("-s", "--solr", dest="solr", action="store", help="your solr endpoint; default is http://localhost:8983/solr/pinboard", default="http://localhost:8983/solr/pinboard")
     parser.add_option("-v", "--verbose", dest="verbose", action="store_true", help="enable chatty logging", default=False)
