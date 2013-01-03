@@ -39,7 +39,7 @@ Import a Twitter account in to Solr:
 
 ### mk-twitter-book.php
 
-Make a shiny PDF book (6 inches by 9 inches) of all your Twitter messages for a
+Make a shiny PDF book ([like this](http://www.flickr.com/photos/straup/8307297720/)) of all your Twitter messages for a
 year:
 
 	$> php -q ./bin/mk-twitter-book/mk-twitter-book.php \
