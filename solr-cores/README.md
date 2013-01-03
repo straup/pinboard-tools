@@ -42,7 +42,7 @@ Import a Twitter account in to Solr:
 Make a shiny PDF book (6 inches by 9 inches) of all your Twitter messages for a
 year:
 
-	$> php -q ./mk-twitter-book/mk-twitter-book.php \
+	$> php -q ./bin/mk-twitter-book/mk-twitter-book.php \
 	   -o thisisaaronland-2012.pdf -u thisisaaronland -y 2012
 
 Known-knowns
@@ -57,6 +57,16 @@ reserved in Solr/Lucene land. This will worked out eventually.
 ### timezones
 
 Always with the timezones...
+
+Dependencies
+--
+
+Most of the things are here are pretty self-contained but you will need to make
+sure that you have the following dependencies installed:
+
+* [Apache Solr 4.0.0](http://lucene.apache.org/solr/) or higher
+
+* [pysolr](http://pypi.python.org/pypi/pysolr)
 
 See also
 --
