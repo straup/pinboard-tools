@@ -12,9 +12,6 @@
    <field name="description" type="text_general" indexed="true" stored="true" required="true" multiValued="false" /> 
    <field name="extended" type="text_general" indexed="true" stored="true" required="false" multiValued="false" /> 
 
-   <field name="description_raw" type="string" indexed="false" stored="true" required="true" multiValued="false" /> 
-   <field name="extended_raw" type="string" indexed="false" stored="true" required="false" multiValued="false" /> 
-
    <field name="meta" type="string" indexed="true" stored="true" multiValued="false" required="true" />
    <field name="hash" type="string" indexed="true" stored="true" multiValued="false" required="true" />
 
@@ -29,9 +26,6 @@
    <field name="machinetags_hierarchy" type="machinetags_hierarchy" indexed="true" stored="false" required="false" multiValued="true" /> 
 
  </fields>
-
-   <copyField source="description" dest="description_raw" />
-   <copyField source="extended" dest="extended_raw" />
 
    <uniqueKey>href</uniqueKey>
 

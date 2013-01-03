@@ -35,7 +35,7 @@ def dump_highlights(opts):
     args = {
         'q' : query,
         'sort' : '_version_ desc',
-        'fl': 'description_raw,extended_raw,tags',
+        'fl': 'description,extended,tags',
         'rows': rows,
         }
 
@@ -81,12 +81,12 @@ def write_highlight(fh, doc):
 
     fh.write('<blockquote class="highlight">')
 
-    for p in doc['extended_raw'].split('\n\n'):
+    for p in doc['extended'].split('\n\n'):
         fh.write('<p class="blurb">')
         fh.write(cgi.escape(p.encode('utf8')))
         fh.write('</p>')
 
-    parts = doc['description_raw'].split(" # ")
+    parts = doc['description'].split(" # ")
 
     fh.write('<cite>')
     fh.write(cgi.escape(parts[0].encode('utf8')))
