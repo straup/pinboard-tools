@@ -9,8 +9,8 @@
    <field name="href" type="string" indexed="true" stored="true" required="true" />
    <field name="hostname" type="string" indexed="true" stored="true" required="false" />
 
-   <field name="description" type="text_general" indexed="true" stored="false" required="true" multiValued="false" /> 
-   <field name="extended" type="text_general" indexed="true" stored="false" required="false" multiValued="false" /> 
+   <field name="description" type="text_general" indexed="true" stored="true" required="true" multiValued="false" /> 
+   <field name="extended" type="text_general" indexed="true" stored="true" required="false" multiValued="false" /> 
 
    <field name="description_raw" type="string" indexed="false" stored="true" required="true" multiValued="false" /> 
    <field name="extended_raw" type="string" indexed="false" stored="true" required="false" multiValued="false" /> 

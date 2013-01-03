@@ -1,5 +1,6 @@
 #!/usr/bin/env python
- 
+
+import cgi 
 import sys
 import json
 import pysolr
@@ -34,7 +35,7 @@ def dump_highlights(opts):
     args = {
         'q' : query,
         'sort' : '_version_ desc',
-        'fl': 'description,extended,tags',
+        'fl': 'description_raw,extended_raw,tags',
         'rows': rows,
         }
 
@@ -64,7 +65,7 @@ def dump_highlights(opts):
 
 def write_header(fh, title=''):
 
-    fh.write("""<html><head><title></title><style type="text/css">
+    fh.write("""<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title></title><style type="text/css">
 body { font-family:sans-serif; font-weight:100; font-size:12pt; margin: 0; }
 blockquote { margin-bottom: 3em;}
 blockquote p { line-height: 1.5em; }
@@ -80,15 +81,15 @@ def write_highlight(fh, doc):
 
     fh.write('<blockquote class="highlight">')
 
-    for p in doc['extended'].split('\n\n'):
+    for p in doc['extended_raw'].split('\n\n'):
         fh.write('<p class="blurb">')
-        fh.write(p.encode('ascii', 'ignore'))
+        fh.write(cgi.escape(p.encode('utf8')))
         fh.write('</p>')
 
-    parts = doc['description'].split(" # ")
+    parts = doc['description_raw'].split(" # ")
 
     fh.write('<cite>')
-    fh.write(parts[0])
+    fh.write(cgi.escape(parts[0].encode('utf8')))
 
     if len(parts) == 2:
 
