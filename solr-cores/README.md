@@ -45,6 +45,10 @@ year:
 	$> php -q ./bin/mk-twitter-book/mk-twitter-book.php \
 	   -o thisisaaronland-2012.pdf -u thisisaaronland -y 2012
 
+You can also optionally exclude reply-to messages and retweets by passing the
+`-r 1` and `-t 1` flags respectively. _Note the explicit boolean `1`. This is
+currently still required but not considered a feature._
+
 Known-knowns
 --
 

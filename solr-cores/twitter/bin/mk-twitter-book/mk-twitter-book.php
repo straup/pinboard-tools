@@ -30,6 +30,8 @@
 			"username" => array("flag" => "u", "required" => 0, "help" => "The username of the person whose tweets you're creating a book of."),
 			"year" => array("flag" => "y", "required" => 0, "help" => "The year of tweets you're created a book of. Defaults to the current year."),
 			"solr" => array("flag" => "s", "required" => 0, "help" => "The Solr endpoint where your tweets are stored. Defaults to http://localhost:8983/solr/twitter/."),
+			"exclude-retweets" => array("flag" => "t", "required" => 0, "help" => "Exclude anything that was retweeted from another user"),
+			"exclude-replies" => array("flag" => "r", "required" => 0, "help" => "Exclude anything that was a direct reply to a tweet by another user"),
 		);
 
 		$opts = cli_getopts($spec);
@@ -84,6 +86,15 @@
 
 			foreach ($parts as $k => $v){
 				$query[] = "{$k}:{$v}";
+			}
+
+			if ($opts['exclude-retweets']){
+				$query[] = 'retweeted:false';
+				$query[] = '-text:RT*';
+			}
+
+			if ($opts['exclude-replies']){
+				$query[] = '-reply_to_tweet_id:*';
 			}
 
 			$params = array(
