@@ -6,6 +6,7 @@ import pysolr
 import json
 import machinetag
 import urlparse
+import datetime
 
 def import_links(options):
 
@@ -33,6 +34,15 @@ def import_links(options):
             mt = machinetag.machinetag(t)
 
             if not mt.is_machinetag():
+                continue
+
+            if mt.namespace() == 'dt' and mt.predicate() == 'timestamp':
+
+                ts = float(mt.value())
+		dt = datetime.datetime.fromtimestamp(ts)
+		time = dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+		doc['time'] = time
                 continue
 
             for chunk in mt.magic_8s():

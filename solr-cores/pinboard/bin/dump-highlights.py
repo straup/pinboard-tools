@@ -5,6 +5,7 @@ import sys
 import json
 import pysolr
 import logging
+import dateutil.parser
 
 def dump_highlights(opts):
 
@@ -34,8 +35,8 @@ def dump_highlights(opts):
 
     args = {
         'q' : query,
-        'sort' : '_version_ desc',
-        'fl': 'description,extended,tags',
+        'sort' : 'time asc',
+        'fl': 'description,extended,href,hostname,time',
         'rows': rows,
         }
 
@@ -86,23 +87,30 @@ def write_highlight(fh, doc):
         fh.write(cgi.escape(p.encode('utf8')))
         fh.write('</p>')
 
-    parts = doc['description'].split(" # ")
+    parts = doc['description'].split(" #")
 
     fh.write('<cite>')
     fh.write(cgi.escape(parts[0].encode('utf8')))
 
-    if len(parts) == 2:
+    if doc['hostname'] == 'kindle.amazon.com':
 
-        parts = parts[1].split(" | ")
-
-        # fh.write('<br />')
-        fh.write(parts[-1].replace("Added on ", " - "))
+        if len(parts) == 2:
+            parts = parts[1].split(" | ")
+            fh.write(parts[-1].replace("Added on ", " - "))
 
     else:
-        # FIX ME: format doc['time'] ...
-        pass
 
-    # fh.write("<br />%s" % ", ".join(doc['tags']))
+        fmt = "%A, %B %d, %Y, %I:%M %p"
+        dt = dateutil.parser.parse(doc['time'])
+    
+        fh.write(" - %s" % dt.strftime(fmt).encode('utf8'))
+
+        # maybe... dunno... probably need to add an index at
+        # the back or something... (20140105/straup)
+
+        # parts = doc['href'].split("#")
+        # fh.write('<br />')
+        # fh.write(cgi.escape(parts[0].encode('utf8')))
 
     fh.write('</cite>')
     fh.write('</blockquote>')

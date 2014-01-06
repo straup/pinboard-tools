@@ -279,6 +279,7 @@ sub post_as_link {
 	"dt:year=" . time2str("%Y", $highlight->{'timestamp'}),
 	"dt:month=" . time2str("%m", $highlight->{'timestamp'}),
 	"dt:day=" . time2str("%d", $highlight->{'timestamp'}),
+	"dt:timestamp=" . $highlight->{'timestamp'},
 	"md5:book=" . $md5_book,
 	"md5:author=" . $md5_author,
 	);
