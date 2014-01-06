@@ -81,7 +81,9 @@
 
 				$this->SetFont('Helvetica','B', 24);
 				$this->SetTextColor(0);
-				$this->MultiCell(0, .5, $this->tweet['text'], 0, $this->text_align);
+
+				$text = $this->tweet['text'];
+				$this->MultiCell(0, .5, $text, 0, $this->text_align);
 
 				$qr_img = $this->generate_qrcode($this->tweet['url']);
 
