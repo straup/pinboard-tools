@@ -68,7 +68,7 @@ def write_header(fh, title=''):
 
     fh.write("""<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title></title><style type="text/css">
 body { font-family:sans-serif; font-weight:100; font-size:12pt; margin: 0; }
-blockquote { margin-bottom: 3em;}
+    blockquote { margin-bottom: 1.5em;}
 blockquote p { line-height: 1.5em; }
 cite { font-size: 8pt; line-height: 1.4em; }
 #titlepage { font-size:36pt; text-align:right; font-weight:700; margin-top: 10em; color:#666; }
